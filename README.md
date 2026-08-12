@@ -30,6 +30,29 @@ or real biometrics (Dependency Inversion / SOLID):
 Wiring lives in `AppDelegate` (the composition root). State is stored at
 `~/Library/Application Support/NapLocker/locked-apps.json`.
 
+## Install
+
+NapLocker is ad-hoc signed (no paid Apple Developer ID), so it isn't notarized. Both install
+paths below account for that — see the note under each.
+
+**Quick install (no Xcode needed)** — downloads the latest prebuilt release and clears the
+Gatekeeper quarantine flag so it opens without a security prompt:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/nileshkk9/NapLocker/main/quick-install.sh | bash
+```
+
+**Build from source (requires Xcode)** — clones the repo and builds it locally, which avoids
+quarantine entirely since the app never leaves your Mac in an unsigned-download state:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/nileshkk9/NapLocker/main/install.sh | bash
+```
+
+Both scripts quit any running NapLocker, install to `/Applications/NapLocker.app`, and relaunch
+it. Piping a script from the internet into `bash` means trusting the source — read `install.sh`
+/ `quick-install.sh` first if you'd rather not.
+
 ## Requirements
 
 - **macOS 14+** (uses the Observation framework / `@Observable`).
