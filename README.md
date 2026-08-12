@@ -53,6 +53,23 @@ Both scripts quit any running NapLocker, install to `/Applications/NapLocker.app
 it. Piping a script from the internet into `bash` means trusting the source — read `install.sh`
 / `quick-install.sh` first if you'd rather not.
 
+### Publishing a new release
+
+`.github/workflows/release.yml` builds NapLocker on a macOS GitHub Actions runner and publishes
+the zipped `.app` as a GitHub Release (ad-hoc signed the same way as a local build — CI has no
+Apple Developer ID either, so the result is identical to what `install.sh` produces). To cut a
+release:
+
+```bash
+git tag v1.1.0
+git push --tags
+```
+
+Pushing a `v*.*.*` tag builds and attaches `NapLocker.zip` to a release named after the tag,
+which `quick-install.sh` then picks up via `.../releases/latest/download/NapLocker.zip`. The
+workflow can also be run manually (Actions tab → Release → Run workflow) to test the build
+without cutting a release — that just uploads a build artifact instead.
+
 ## Requirements
 
 - **macOS 14+** (uses the Observation framework / `@Observable`).
