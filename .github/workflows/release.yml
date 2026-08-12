@@ -11,9 +11,22 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+
+      # The project file uses Xcode's newest "synchronized folder" format
+      # (objectVersion 77), which only recent Xcode versions can open —
+      # older ones fail with "future Xcode project file format". Pick the
+      # newest Xcode the runner has installed rather than trusting whatever
+      # default `xcodebuild` resolves to.
+      - name: Select newest available Xcode
+        run: |
+          ls /Applications | grep '^Xcode.*\.app$'
+          LATEST=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          echo "Using $LATEST"
+          sudo xcode-select -s "$LATEST"
+          xcodebuild -version
 
       - name: Build Release (ad-hoc signed)
         run: |
