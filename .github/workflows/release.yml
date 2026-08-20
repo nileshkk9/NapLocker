@@ -14,6 +14,8 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # The project file uses Xcode's newest "synchronized folder" format
       # (objectVersion 77), which only recent Xcode versions can open —
@@ -58,3 +60,30 @@ jobs:
           gh release create "${{ github.ref_name }}" NapLocker.zip \
             --title "NapLocker ${{ github.ref_name }}" \
             --notes "Automated build from ${{ github.sha }}. Ad-hoc signed, not notarized."
+
+      # Keep the Homebrew cask SHA/version in lockstep with the GitHub Release
+      # zip. The public tap (nileshkk9/homebrew-naplocker) syncs from this file.
+      - name: Bump Homebrew cask
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          VERSION="${VERSION#v}"
+          SHA256=$(shasum -a 256 NapLocker.zip | awk '{print $1}')
+          CASK=Casks/naplocker.rb
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout main
+
+          perl -i -pe "s/^  version \".*\"/  version \"${VERSION}\"/" "$CASK"
+          perl -i -pe "s/^  sha256 \".*\"/  sha256 \"${SHA256}\"/" "$CASK"
+
+          git add "$CASK"
+          if git diff --staged --quiet; then
+            echo "Cask already at ${VERSION}"
+            exit 0
+          fi
+          git commit -m "chore: bump Homebrew cask to ${VERSION}"
+          git push origin main

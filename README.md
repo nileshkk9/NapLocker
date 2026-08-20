@@ -32,10 +32,19 @@ Wiring lives in `AppDelegate` (the composition root). State is stored at
 
 ## Install
 
-NapLocker is ad-hoc signed (no paid Apple Developer ID), so it isn't notarized. Both install
-paths below account for that — see the note under each.
+### Homebrew (recommended)
 
-**Quick install (no Xcode needed)** — downloads the latest prebuilt release and clears the
+```bash
+brew install --cask nileshkk9/naplocker/naplocker
+```
+
+That taps [`nileshkk9/homebrew-naplocker`](https://github.com/nileshkk9/homebrew-naplocker) and
+installs the latest GitHub Release. Upgrade with `brew upgrade --cask naplocker`.
+
+NapLocker is ad-hoc signed (no paid Apple Developer ID), so it isn't notarized. The cask
+clears Gatekeeper quarantine after install so the app can launch.
+
+**Quick install (no Homebrew / no Xcode)** — downloads the latest prebuilt release and clears the
 Gatekeeper quarantine flag so it opens without a security prompt:
 
 ```bash
@@ -66,8 +75,9 @@ git push --tags
 ```
 
 Pushing a `v*.*.*` tag builds and attaches `NapLocker.zip` to a release named after the tag,
-which `quick-install.sh` then picks up via `.../releases/latest/download/NapLocker.zip`. The
-workflow can also be run manually (Actions tab → Release → Run workflow) to test the build
+which Homebrew and `quick-install.sh` then pick up. The same workflow updates
+`Casks/naplocker.rb` (version + SHA256) on `main`; the Homebrew tap syncs from that file.
+The workflow can also be run manually (Actions tab → Release → Run workflow) to test the build
 without cutting a release — that just uploads a build artifact instead.
 
 ## Requirements
